@@ -3,7 +3,7 @@ from collections import Counter
 
 left: Counter[int] = Counter()
 right: Counter[int] = Counter()
-with open("../day1-1.input.txt") as file:
+with open("part1.input.txt") as file:
     for line in file:
         l, r = line.split("   ")
         left[int(l)] += 1

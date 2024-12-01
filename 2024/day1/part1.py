@@ -2,7 +2,7 @@ import bisect
 
 left: list[int] = []
 right: list[int] = []
-with open("../day1-1.input.txt") as file:
+with open("part1.input.txt") as file:
     for line in file:
         l, r = line.split("   ")
         l, r = int(l), int(r)
