@@ -1,4 +1,9 @@
+from functools import cache
+
+
+@cache
 def blink(stone: int, blinks: int) -> int:
+    # print(stone, blinks)
     if blinks == 0:
         return 1
     match stone:
