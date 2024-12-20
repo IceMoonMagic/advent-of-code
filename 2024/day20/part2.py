@@ -43,7 +43,7 @@ class Position:
         return data[self.y][self.x]
 
 
-Shortcut = tuple[Position, Position, int]
+Shortcut = tuple[Position, Position]
 Track = tuple[tuple[int, ...], ...]
 
 
@@ -87,92 +87,65 @@ def trace_track(
 
 
 def find_shortcuts(pos: Position, track: Track) -> list[Shortcut]:
-    result = []
-    ends = reachable_positions(pos, CHEAT_LENGTH - 1, track)
-    for end, distance in ends.items():
-        saves = shortcut_shorts((pos, end, distance), track)
-        if saves > 0:
-            result.append((pos, end, saves))
-    return result
-
-
-def min_dict(dict1: dict[Position, int], dict2: dict[Position, int]) -> dict:
-    keys = set(dict1.keys()).union(dict2.keys())
-    result: dict[Position, int] = {}
-    for key in keys:
-        if key in dict1 and key not in dict2:
-            result[key] = dict1[key]
-        elif key not in dict1:
-            result[key] = dict2[key]
-        elif dict1[key] > dict2[key]:
-            result[key] = dict2[key]
-        else:
-            result[key] = dict1[key]
-    return result
-
-
-def increase_dict(dictionary: dict[Position, int]):
-    for pos, distance in dictionary.items():
-        dictionary[pos] = distance + 1
+    return [
+        (pos, end) for end in reachable_positions(pos, CHEAT_LENGTH - 1, track)
+    ]
 
 
 @cache
-def reachable_positions(
-    start_pos: Position, start_spaces: int, track: Track
-) -> dict[Position, int]:
-    @cache
-    def _reachable_positions(pos, spaces) -> dict[Position, int]:
-        if not pos.is_valid_position(track):
-            return {}
-        if pos.at(track) != -1:
-            return {pos: 1}
-        elif spaces == 0:
-            return {}
-
-        result = dict()
-        for move in [pos.north(), pos.south(), pos.east(), pos.west()]:
-            if move.is_valid_position(track):
-                result = min_dict(
-                    result, _reachable_positions(move, spaces - 1)
-                )
-
-        increase_dict(result)
+def _reachable_positions(
+    pos: Position, spaces: int, track: Track
+) -> set[Position]:
+    result = set()
+    if not pos.is_valid_position(track):
         return result
+    if pos.at(track) != -1:
+        result.add(pos)
+    if spaces == 0:
+        return result
+    for move in [pos.north(), pos.south(), pos.east(), pos.west()]:
+        if move.is_valid_position(track):
+            result.update(_reachable_positions(move, spaces - 1, track))
 
-    reachable = min_dict(
-        min_dict(
-            min_dict(
-                _reachable_positions(start_pos.north(), start_spaces),
-                _reachable_positions(start_pos.south(), start_spaces),
-            ),
-            _reachable_positions(start_pos.east(), start_spaces),
-        ),
-        _reachable_positions(start_pos.west(), start_spaces),
-    )
-    # for key in {
-    #     start_pos,
-    #     start_pos.north(),
-    #     start_pos.south(),
-    #     start_pos.east(),
-    #     start_pos.west(),
-    # }:
-    #     if key in reachable:
-    #         del reachable[key]
-    return reachable
-
-
-def shortcut_shorts(shortcut: Shortcut, track: Track) -> int:
-    result = shortcut[1].at(track) - shortcut[0].at(track) - shortcut[2]
     return result
 
 
-def print_n_saves(shortcuts: list[Shortcut], track):
+def reachable_positions(
+    start_pos: Position, start_spaces: int, track: Track
+) -> set[Position]:
+
+    reachable = (
+        _reachable_positions(start_pos.north(), start_spaces, track)
+        .union(_reachable_positions(start_pos.south(), start_spaces, track))
+        .union(_reachable_positions(start_pos.east(), start_spaces, track))
+        .union(_reachable_positions(start_pos.west(), start_spaces, track))
+    )
+    return reachable
+
+
+@cache
+def shortcut_saves(shortcut: Shortcut, track: Track) -> int:
+    distance = abs(shortcut[1].y - shortcut[0].y) + abs(
+        shortcut[1].x - shortcut[0].x
+    )
+
+    result = shortcut[1].at(track) - shortcut[0].at(track) - distance
+    return result
+
+
+def print_n_saves(shortcuts: list[Shortcut], track, min_: int = 1):
     ranked = defaultdict(list)
     for shortcut in shortcuts:
-        ranked[shortcut[2]].append(shortcut)
+        ranked[shortcut_saves(shortcut, track)].append(shortcut)
 
     for saves, shortcuts_ in sorted(ranked.items()):
-        print(f"{len(shortcuts_)} shortcut(s) save(s) {saves}")
+        if saves >= min_:
+            print(f"{len(shortcuts_)} shortcut(s) save(s) {saves}")
+
+
+def print_shortcuts(shortcuts: list[Shortcut]):
+    for shortcut in shortcuts:
+        print(f"{shortcut[0]} -> {shortcut[1]} | {shortcut[2]}")
 
 
 def main():
@@ -180,19 +153,29 @@ def main():
         data = file.read().splitlines()
     track, path = trace_track(data)
     shortcuts = []
-    for tile in path:
+    print()
+    for i, tile in enumerate(path):
+        print("\033[1A", end="")
+        print(f"{i:,} / {len(path):,}")
         shortcuts += find_shortcuts(tile, track)
 
     # print(shortcuts)
 
-    print_n_saves(shortcuts, track)
+    # print_n_saves(shortcuts, track)
+    # print_shortcuts(shortcuts)
 
-    # tally = 0
-    # for shortcut in shortcuts:
-    #     if shortcut_shorts(shortcut, track) >= 100:
-    #         tally += 1
-    # print(tally)
+    print()
+    tally = 0
+    for i, shortcut in enumerate(shortcuts):
+        print("\033[1A", end="")
+        print(f"{i:,} / {len(shortcuts):,} | {tally:,}")
+        if shortcut_saves(shortcut, track) >= 100:
+            tally += 1
+    print(tally)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
