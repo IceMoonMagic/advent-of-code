@@ -1,3 +1,4 @@
+import collections
 from collections.abc import Sequence
 
 
@@ -58,9 +59,17 @@ def find_sides(region: set[Position]) -> int:
     return result
 
 
+def get_pos_region(pos: Position, regions: list[set[Position]]) -> int:
+    for i, region in enumerate(regions):
+        if pos in region:
+            return i
+    raise ValueError
+
+
 def main():
     with open("input.txt") as file:
         data = file.read().splitlines()
+
     regions = []
     for y, line in enumerate(data):
         for x, _char in enumerate(line):
@@ -70,7 +79,71 @@ def main():
             regions.append(set())
             find_region(data, pos, data[y][x], regions[-1])
 
-    print(sum((find_sides(region) * len(region) for region in regions)))
+    sides: dict[int, int] = collections.Counter()
+    for y in range(len(data) + 1):
+        prev_top, prev_btm = None, None
+        for x in range(len(data[0])):
+            top = Position(x, y - 1)
+            btm = Position(x, y)
+            if (
+                top.is_valid_position(data)
+                and (top.at(data) != prev_top or top.at(data) == prev_btm)
+                and (
+                    not btm.is_valid_position(data)
+                    or top.at(data) != btm.at(data)
+                )
+            ):
+                sides[get_pos_region(top, regions)] += 1
+            if (
+                btm.is_valid_position(data)
+                and (btm.at(data) != prev_btm or btm.at(data) == prev_top)
+                and (
+                    not top.is_valid_position(data)
+                    or btm.at(data) != top.at(data)
+                )
+            ):
+                sides[get_pos_region(btm, regions)] += 1
+                if btm.at(data) == "C":
+                    print(btm)
+            if top.is_valid_position(data):
+                prev_top = top.at(data)
+            if btm.is_valid_position(data):
+                prev_btm = btm.at(data)
+
+    for x in range(len(data[0]) + 1):
+        prev_left, prev_right = None, None
+        for y in range(len(data)):
+            left = Position(x - 1, y)
+            right = Position(x, y)
+            if (
+                left.is_valid_position(data)
+                and (left.at(data) != prev_left or left.at(data) == prev_right)
+                and (
+                    not right.is_valid_position(data)
+                    or left.at(data) != right.at(data)
+                )
+            ):
+                sides[get_pos_region(left, regions)] += 1
+            if (
+                right.is_valid_position(data)
+                and (
+                    right.at(data) != prev_right or right.at(data) == prev_left
+                )
+                and (
+                    not left.is_valid_position(data)
+                    or right.at(data) != left.at(data)
+                )
+            ):
+                sides[get_pos_region(right, regions)] += 1
+                if right.at(data) == "C":
+                    print(right)
+            if left.is_valid_position(data):
+                prev_left = left.at(data)
+            if right.is_valid_position(data):
+                prev_right = right.at(data)
+
+    print(sides)
+    print(sum((sides[i] * len(region) for i, region in enumerate(regions))))
 
 
 if __name__ == "__main__":
