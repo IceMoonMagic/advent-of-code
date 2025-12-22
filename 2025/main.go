@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/icemoonmagic/advent-of-code/2025/day1"
 )
 
 func main() {
@@ -16,6 +18,8 @@ func main() {
 	}
 	fmt.Printf("Day %d\n", runDay)
 	switch runDay {
+	case 1:
+		fmt.Println(day1.Main())
 	default:
 		fmt.Println("Not Implemented")
 	}
