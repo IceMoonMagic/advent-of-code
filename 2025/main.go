@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/icemoonmagic/advent-of-code/2025/day1"
+	"github.com/icemoonmagic/advent-of-code/2025/day2"
 )
 
 func main() {
@@ -20,6 +21,8 @@ func main() {
 	switch runDay {
 	case 1:
 		fmt.Println(day1.Main())
+	case 2:
+		fmt.Println(day2.Main())
 	default:
 		fmt.Println("Not Implemented")
 	}
