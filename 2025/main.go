@@ -12,6 +12,17 @@ import (
 	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
+func getDay(day int) (func(string) uint, bool) {
+	days := map[int]func(string) uint{
+		1: day1.Main,
+		2: day2.Main,
+		3: day3.Main,
+		4: day4.Main,
+	}
+	f, ok := days[day]
+	return f, ok
+}
+
 func main() {
 	var runDay = 1
 	var sourceFile = "input.txt"
@@ -25,17 +36,11 @@ func main() {
 		}
 	}
 	fmt.Printf("Day %d, %s\n", runDay, sourceFile)
-	inputText := utils.ReadFile(runDay, sourceFile)
-	switch runDay {
-	case 1:
-		fmt.Println(day1.Main(inputText))
-	case 2:
-		fmt.Println(day2.Main(inputText))
-	case 3:
-		fmt.Println(day3.Main(inputText))
-	case 4:
-		fmt.Println(day4.Main(inputText))
-	default:
+	dayF, ok := getDay(runDay)
+	if !ok {
 		fmt.Println("Not Implemented")
+		return
 	}
+	inputText := utils.ReadFile(runDay, sourceFile)
+	fmt.Println(dayF(inputText))
 }
