@@ -8,6 +8,7 @@ import (
 	"github.com/icemoonmagic/advent-of-code/2025/day1"
 	"github.com/icemoonmagic/advent-of-code/2025/day2"
 	"github.com/icemoonmagic/advent-of-code/2025/day3"
+	"github.com/icemoonmagic/advent-of-code/2025/day4"
 )
 
 func main() {
@@ -26,6 +27,8 @@ func main() {
 		fmt.Println(day2.Main())
 	case 3:
 		fmt.Println(day3.Main())
+	case 4:
+		fmt.Println(day4.Main())
 	default:
 		fmt.Println("Not Implemented")
 	}
