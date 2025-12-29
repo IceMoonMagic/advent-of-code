@@ -3,15 +3,10 @@ package day1
 import (
 	"strconv"
 	"strings"
-
-	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
-func Main() uint {
-	input := utils.ReadFile(1, "input.txt")
-
-	return calculateCodeV2(strings.Fields(input))
-
+func Main(inputText string) uint {
+	return calculateCodeV2(strings.Fields(inputText))
 }
 
 func calculateCodeV1(sequence []string) uint {

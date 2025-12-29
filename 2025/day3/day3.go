@@ -8,8 +8,7 @@ import (
 	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
-func Main() uint {
-	inputText := utils.ReadFile(3, "input.txt")
+func Main(inputText string) uint {
 	inputBanks := parseInput(inputText)
 	joltages := make([]uint, 0, len(inputBanks))
 	for _, bank := range inputBanks {

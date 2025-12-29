@@ -6,8 +6,7 @@ import (
 	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
-func Main() uint {
-	inputText := utils.ReadFile(4, "input.txt")
+func Main(inputText string) uint {
 	inputData := parseInput(inputText)
 	var totalMoved uint
 	for {

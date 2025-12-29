@@ -4,12 +4,9 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-
-	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
-func Main() uint {
-	inputText := strings.TrimSpace(utils.ReadFile(2, "input.txt"))
+func Main(inputText string) uint {
 	inputRanges := parseInput(inputText)
 	invalidIds := []uint{}
 	for _, ir := range inputRanges {
