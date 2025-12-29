@@ -6,11 +6,6 @@ import (
 	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
-type position struct {
-	x uint
-	y uint
-}
-
 func Main() uint {
 	inputText := utils.ReadFile(4, "input.txt")
 	inputData := parseInput(inputText)
@@ -34,40 +29,40 @@ func parseInput(inputText string) [][]rune {
 	return data
 }
 
-func findAdjacent(pos, bound position) []position {
-	var result = make([]position, 0, 8)
-	u, d, l, r := 0 < pos.y, pos.y < bound.y-1, 0 < pos.x, pos.x < bound.x-1
+func findAdjacent(pos, bound utils.Position) []utils.Position {
+	var result = make([]utils.Position, 0, 8)
+	u, d, l, r := 0 < pos.Y, pos.Y < bound.Y-1, 0 < pos.X, pos.X < bound.X-1
 	if u {
 		if l {
-			result = append(result, position{pos.x - 1, pos.y - 1})
+			result = append(result, utils.Pos(pos.X-1, pos.Y-1))
 		}
-		result = append(result, position{pos.x, pos.y - 1})
+		result = append(result, utils.Pos(pos.X, pos.Y-1))
 		if r {
-			result = append(result, position{pos.x + 1, pos.y - 1})
+			result = append(result, utils.Pos(pos.X+1, pos.Y-1))
 		}
 	}
 	if l {
-		result = append(result, position{pos.x - 1, pos.y})
+		result = append(result, utils.Pos(pos.X-1, pos.Y))
 	}
 	if r {
-		result = append(result, position{pos.x + 1, pos.y})
+		result = append(result, utils.Pos(pos.X+1, pos.Y))
 	}
 	if d {
 		if l {
-			result = append(result, position{pos.x - 1, pos.y + 1})
+			result = append(result, utils.Pos(pos.X-1, pos.Y+1))
 		}
-		result = append(result, position{pos.x, pos.y + 1})
+		result = append(result, utils.Pos(pos.X, pos.Y+1))
 		if r {
-			result = append(result, position{pos.x + 1, pos.y + 1})
+			result = append(result, utils.Pos(pos.X+1, pos.Y+1))
 		}
 	}
 	return result
 }
 
-func canMoveCell(pos, bound position, data [][]rune) bool {
+func canMoveCell(pos, bound utils.Position, data [][]rune) bool {
 	var count uint8
 	for _, a := range findAdjacent(pos, bound) {
-		if data[a.y][a.x] == '@' {
+		if data[a.Y][a.X] == '@' {
 			count += 1
 		}
 		if count >= 4 {
@@ -77,16 +72,16 @@ func canMoveCell(pos, bound position, data [][]rune) bool {
 	return true
 }
 
-func findMoveableCells(data [][]rune) []position {
-	result := make([]position, 0, len(data)*len(data[0]))
-	yBound := uint(len(data))
+func findMoveableCells(data [][]rune) []utils.Position {
+	result := make([]utils.Position, 0, len(data)*len(data[0]))
+	yBound := len(data)
 	for y, row := range data {
-		bound := position{uint(len(row)), uint(yBound)}
+		bound := utils.Pos(len(row), yBound)
 		for x, cell := range row {
 			if cell != '@' {
 				continue
 			}
-			cellPos := position{uint(x), uint(y)}
+			cellPos := utils.Pos(x, y)
 			if canMoveCell(cellPos, bound, data) {
 				result = append(result, cellPos)
 			}
@@ -95,8 +90,8 @@ func findMoveableCells(data [][]rune) []position {
 	return result
 }
 
-func clearCells(cells []position, data [][]rune) {
+func clearCells(cells []utils.Position, data [][]rune) {
 	for _, c := range cells {
-		data[c.y][c.x] = '.'
+		data[c.Y][c.X] = '.'
 	}
 }
