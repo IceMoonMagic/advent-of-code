@@ -7,8 +7,8 @@ type Position struct {
 	Y uint
 }
 
-func (pos Position) moved(x, y int) Position {
-	return Pos(int(pos.X)+x, int(pos.Y)+x)
+func (r Position) InRange(v uint) bool {
+	return r.X <= v && v <= r.Y
 }
 
 func Pos[V int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64](x, y V) Position {

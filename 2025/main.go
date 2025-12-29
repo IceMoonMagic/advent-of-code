@@ -9,6 +9,7 @@ import (
 	"github.com/icemoonmagic/advent-of-code/2025/day2"
 	"github.com/icemoonmagic/advent-of-code/2025/day3"
 	"github.com/icemoonmagic/advent-of-code/2025/day4"
+	"github.com/icemoonmagic/advent-of-code/2025/day5"
 	"github.com/icemoonmagic/advent-of-code/2025/utils"
 )
 
@@ -18,6 +19,7 @@ func getDay(day int) (func(string) uint, bool) {
 		2: day2.Main,
 		3: day3.Main,
 		4: day4.Main,
+		5: day5.Main,
 	}
 	f, ok := days[day]
 	return f, ok
